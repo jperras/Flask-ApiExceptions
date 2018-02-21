@@ -20,14 +20,16 @@ with open(module_path) as module:
 
 __version__ = '.'.join(eval(version_line.split('__version_info__ = ')[-1]))
 
+url_base = 'https://github.com/jperras/Flask-ApiExceptions'
+
 setup(
     name='Flask-ApiExceptions',
     version=__version__,
     author='Joel Perras',
     author_email='joel@nerderati.com',
     description='Python exceptions serializable to Flask HTTP responses.',
-    url='https://github.com/jperras/Flask-ApiExceptions',
-    download_url='https://github.com/jperras/Flask-ApiExceptions/archive/1.0.4.tar.gz',
+    url=url_base,
+    download_url='{}/archive/{}.tar.gz'.format(url_base, __version__),
     long_description=__doc__,
     py_modules=['flask_apiexceptions'],
     license='MIT',
