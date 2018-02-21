@@ -27,7 +27,7 @@ setup(
     author_email='joel@nerderati.com',
     description='Python exceptions serializable to Flask HTTP responses.',
     url='https://github.com/jperras/Flask-ApiExceptions',
-    download_url='https://github.com/jperras/Flask-ApiExceptions/archive/1.0.3.tar.gz',
+    download_url='https://github.com/jperras/Flask-ApiExceptions/archive/1.0.4.tar.gz',
     long_description=__doc__,
     py_modules=['flask_apiexceptions'],
     license='MIT',
