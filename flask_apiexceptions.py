@@ -13,7 +13,7 @@ Base API exception classes.
 from __future__ import absolute_import
 from __future__ import print_function
 
-__version_info__ = ('1', '0', '0')
+__version_info__ = ('1', '0', '3')
 __version__ = '.'.join(__version_info__)
 __author__ = 'Joel Perras'
 __copyright__ = '(c) 2018 Fictive Kin, LLC'
@@ -21,7 +21,6 @@ __all__ = ['JSONExceptionHandler', 'ApiException', 'ApiError',
            'api_exception_handler']
 
 
-import re
 from flask import jsonify, request
 from werkzeug.exceptions import default_exceptions, HTTPException
 
