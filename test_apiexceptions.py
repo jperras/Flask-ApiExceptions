@@ -135,3 +135,50 @@ def test_api_exception_handler(app):
     assert json_data['errors'][0]['message'] == 'I am a little teapot.'
     assert json_data['errors'][0]['code'] == 'teapot'
     assert json_data['errors'][0]['info'] is None
+
+
+def test_exception_auto_populate_error():
+    """If no ApiError object is provided, create one by default in
+    ApiException."""
+
+    exc = ApiException(
+        status_code=418,
+        code='bad_inputs',
+        message='Something happened.',
+        info={'key': 'value'})
+
+    assert len(exc.errors) == 1
+    assert isinstance(exc.errors[0], ApiError)
+    assert exc.errors[0].code == 'bad_inputs'
+    assert exc.errors[0].message == 'Something happened.'
+    assert exc.errors[0].info == {'key': 'value'}
+
+    exc = ApiException(
+        status_code=418,
+        code='bad_inputs')
+
+    assert len(exc.errors) == 1
+    assert isinstance(exc.errors[0], ApiError)
+    assert exc.errors[0].code == 'bad_inputs'
+    assert exc.errors[0].message is None
+    assert exc.errors[0].info is None
+
+    exc = ApiException(
+        status_code=418,
+        message='Whoopsie! That is no good.')
+
+    assert len(exc.errors) == 1
+    assert isinstance(exc.errors[0], ApiError)
+    assert exc.errors[0].info is None
+    assert exc.errors[0].code is None
+    assert exc.errors[0].message == 'Whoopsie! That is no good.'
+
+    exc = ApiException(
+        status_code=418,
+        info={'key': 'value'})
+
+    assert len(exc.errors) == 1
+    assert isinstance(exc.errors[0], ApiError)
+    assert exc.errors[0].info == {'key': 'value'}
+    assert exc.errors[0].code is None
+    assert exc.errors[0].message is None

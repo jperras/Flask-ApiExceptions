@@ -179,14 +179,30 @@ class ApiException(Exception):
     code.
     """
 
-    def __init__(self, status_code, error=None):
+    def __init__(self, status_code, error=None, message=None, info=None,
+                 code=None):
+        """
+        Initialize the ApiException container object.
+
+        If an `error` instance is provided, it will be added as an error
+        contained within this wrapper. If any of `message`, `info`, or `code`
+        are set, a new error object is created added.
+        """
+
         super(ApiException, self).__init__()
         self._errors = []
         self.status_code = status_code
         if error is not None:
             self._errors.append(error)
 
+        if message or info or code:
+            self.add_error(ApiError(message=message, code=code, info=info))
+
     def add_error(self, error):
+        """
+        Append an error to the list of errors contained with this
+        ApiException instance.
+        """
         self._errors.append(error)
 
     @property
@@ -194,6 +210,10 @@ class ApiException(Exception):
         return self._errors
 
     def serialize(self):
+        """
+        Serialize the errors contained within this ApiException object to
+        Python types that are easily convertible to JSON (or similar).
+        """
         return {'errors': [e.serialize() for e in self.errors]}
 
 
