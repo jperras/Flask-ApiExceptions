@@ -182,3 +182,34 @@ def test_exception_auto_populate_error():
     assert exc.errors[0].info == {'key': 'value'}
     assert exc.errors[0].code is None
     assert exc.errors[0].message is None
+
+
+def test_api_exception_subclass_variations(app):
+    """Subclass ApiException with class attribute descriptors."""
+
+    class CustomError(ApiException):
+        status_code = 418
+        message = "A class attribute exception message."
+        code = 'class-attribute'
+        info = {'foo': 'bar'}
+
+    @app.route('/testing')
+    def testing():
+        raise CustomError()
+
+    ext = JSONExceptionHandler(app)
+
+    # Use the api_exception_handler since CustomError is a subclass of
+    # ApiException
+    ext.register(code_or_exception=CustomError, handler=api_exception_handler)
+
+    with app.app_context():
+        with app.test_client() as c:
+            rv = c.get('/testing')
+
+    assert rv.status_code == 418
+    assert rv.headers['content-type'] == 'application/json'
+    assert json.loads(rv.data)['errors'] == [
+        {'code': CustomError.code,
+         'message': CustomError.message,
+         'info': CustomError.info}]

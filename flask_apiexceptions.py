@@ -179,7 +179,16 @@ class ApiException(Exception):
     code.
     """
 
-    def __init__(self, status_code, error=None, message=None, info=None,
+    # Default status code if none is set.
+    status_code = 500
+
+    message = None
+
+    code = None
+
+    info = None
+
+    def __init__(self, status_code=None, error=None, message=None, info=None,
                  code=None):
         """
         Initialize the ApiException container object.
@@ -190,10 +199,15 @@ class ApiException(Exception):
         """
 
         super(ApiException, self).__init__()
+
         self._errors = []
-        self.status_code = status_code
         if error is not None:
             self._errors.append(error)
+
+        self.status_code = status_code or self.status_code
+        message = message or self.message
+        code = code or self.code
+        info = info or self.info
 
         if message or info or code:
             self.add_error(ApiError(message=message, code=code, info=info))
