@@ -224,3 +224,94 @@ sense when you can set multiple ``ApiError`` objects to the same
         #     {"code": "invalid-data", "message": "The address provided is invalid."},
         #     {"code": "invalid-data", "message": "The phone number does not exist.", "info": {"area_code": "444"}}
         # ]}
+
+If you only want a single ``error`` to be instantiated within the
+``ApiException``, this can be done via the constructor of the latter as a
+shorthand:
+
+.. code:: python
+
+    exc = ApiException(
+        status_code=400,
+        code='invalid-data',
+        message='The address provided is invalid',
+        info={'zip_code': '90210'})
+
+which is the equivalent of:
+
+.. code:: python
+
+    exc = ApiException(status_code=400)
+    error=ApiError(
+        code='invalid-data',
+        message='The address provided is invalid',
+        info={'zip_code': '90210'}))
+
+    exc.add_error(error)
+
+A useful pattern is to subclass ``ApiException`` into distinctly useful
+exception types, on which you can define default class-level attributes that
+will be used to populate the correct ``error`` object on instantiation. For
+example:
+
+.. code:: python
+
+    class MissingResourceError(ApiException):
+        status_code = 404
+        message = "No such resource exists."
+        code = 'not-found'
+
+    # ...
+
+    @app.route('/posts/<int:post_id>')
+    def post_by_id(post_id):
+        """Fetch a single post by ID from the database."""
+
+        post = Post.query.filter(Post.id == post_id).one_or_none()
+        if post is None:
+            raise MissingResourceError()
+
+        # 404 response, wiht JSON body:
+        # {"errors": [
+        #     {"code": "not-found", "message": "No such resource exists."}
+        # ]}
+
+The nice thing about this particular pattern is that you can raise
+*semantically correct* exceptions within your codebase, and can choose to
+handle them in the call stack. If you don't handle them, they simply bubble up
+to the exception handler (if you've configured the
+``flask_apiexceptions.api_exception_handler`` or similar) registered with
+Flask, and are then transformed into a useful response for the requesting client.
+
+.. code:: python
+
+    class MissingResourceError(ApiException):
+        status_code = 404
+        message = "No such resource exists."
+        code = 'not-found'
+
+    class Post(db.Model):
+        # ...
+        @classmethod
+        def query_by_id(cls, post_id):
+            """Query Post by ID, raise exception if not found."""
+            result = cls.query.filter(cls.id == post_id).one_or_none()
+            if result is None:
+                raise MissingResourceError()
+
+            return result
+
+    @app.route('/posts/<int:post_id>')
+    def post_by_id(post_id):
+        """Fetch a single post by ID from the database."""
+
+        try:
+            post = Post.query_by_id(post_id)
+        except MissingResourceError as e:
+            # We can do whatever we want now that we've caught the exception.
+            # For the sake of illustration, we're just going to log it.
+            app.logger.exception("Could not locate post!")
+
+            # Will bubble up the exception until it is rendered to JSON
+            # for the client.
+            raise e
