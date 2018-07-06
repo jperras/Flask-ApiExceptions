@@ -12,18 +12,20 @@ import os
 from setuptools import setup
 
 with open('README.rst') as file:
-    long_description = file.read()
+    LONG_DESCRIPTION = file.read()
 
-module_path = os.path.join(os.path.dirname(__file__), 'flask_apiexceptions.py')
-with open(module_path) as module:
+MODULE_PATH = os.path.join(os.path.dirname(__file__), 'flask_apiexceptions.py')
+
+with open(MODULE_PATH) as module:
     for line in module:
         if line.startswith('__version_info__'):
             version_line = line
             break
 
+#pylint: disable=locally-disabled,eval-used
 __version__ = '.'.join(eval(version_line.split('__version_info__ = ')[-1]))
 
-url_base = 'https://github.com/jperras/Flask-ApiExceptions'
+URL_BASE = 'https://github.com/jperras/Flask-ApiExceptions'
 
 setup(
     name='Flask-ApiExceptions',
@@ -31,9 +33,9 @@ setup(
     author='Joel Perras',
     author_email='joel@nerderati.com',
     description='Python exceptions serializable to Flask HTTP responses.',
-    url=url_base,
-    download_url='{}/archive/{}.tar.gz'.format(url_base, __version__),
-    long_description=long_description,
+    url=URL_BASE,
+    download_url='{}/archive/{}.tar.gz'.format(URL_BASE, __version__),
+    long_description=LONG_DESCRIPTION,
     py_modules=['flask_apiexceptions'],
     license='MIT',
     platforms='any',

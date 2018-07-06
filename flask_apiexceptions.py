@@ -21,10 +21,11 @@ __all__ = ['JSONExceptionHandler', 'ApiException', 'ApiError',
            'api_exception_handler']
 
 
+import logging
+
 from flask import jsonify, request
 from werkzeug.exceptions import default_exceptions, HTTPException
 
-import logging
 logger = logging.getLogger('apiexceptions')
 
 
@@ -112,7 +113,7 @@ class JSONExceptionHandler(object):
 
         # Register the default HTTP codes to be handled by our exception
         # handler.
-        for code, v in default_exceptions.items():
+        for code, _ in default_exceptions.items():
             self.register(code)
 
         if not hasattr(self.app, 'extensions'):
@@ -131,7 +132,7 @@ class JSONExceptionHandler(object):
         self.app.register_error_handler(code_or_exception, f=f)
 
     @staticmethod
-    def handle_404(error=None):
+    def handle_404(error=None):  #pylint: disable=locally-disabled,unused-argument
         """The default Werkzeug 404 handler does not include a
         message or description, which causes some consistency issues with our
         frontends when receiving a 404."""
@@ -142,7 +143,7 @@ class JSONExceptionHandler(object):
         return response
 
 
-class ApiError(object):
+class ApiError(object):  #pylint: disable=locally-disabled,too-few-public-methods
     """
     Contains information related to an API usage error.
 
@@ -188,6 +189,7 @@ class ApiException(Exception):
 
     info = None
 
+    #pylint: disable=locally-disabled,too-many-arguments
     def __init__(self, status_code=None, error=None, message=None, info=None,
                  code=None):
         """
@@ -221,6 +223,7 @@ class ApiException(Exception):
 
     @property
     def errors(self):
+        """Getter for errors currently stored on this instance."""
         return self._errors
 
     def serialize(self):

@@ -13,6 +13,9 @@ from flask_apiexceptions import (
     JSONExceptionHandler, ApiException, api_exception_handler, ApiError)
 
 
+#pylint: disable=redefined-outer-name
+
+
 @pytest.fixture
 def app():
     """Flask application fixture."""
@@ -22,6 +25,7 @@ def app():
 
 
 def test_initialize_extension(app):
+    """Ensure extension initialization happens as expected."""
 
     assert 'apiexceptions' not in getattr(app, 'extensions', dict())
 
@@ -49,10 +53,12 @@ def test_register_exception_type(app):
     """Register an exception type with the default handler."""
 
     class CustomError(Exception):
+        """Exception subclass for testing purposes."""
         message = 'A custom error message'
 
     @app.route('/testing')
-    def testing():
+    def testing():  #pylint: disable=locally-disabled,unused-variable
+        """Endpoint that simply raises an exception."""
         raise CustomError()
 
     ext = JSONExceptionHandler(app)
@@ -88,16 +94,19 @@ def test_register_exception_class_and_handler(app):
     """Custom exception handling."""
 
     class CustomError(Exception):
+        """Exception subclass with attributes."""
         teapot_code = 418
         special = {'foo': 'bar'}
 
     def custom_handler(error):
+        """Handler for custom exception subclass."""
         response = jsonify(data=error.special)
         response.status_code = error.teapot_code
         return response
 
     @app.route('/testing')
-    def testing():
+    def testing():  #pylint: disable=locally-disabled,unused-variable
+        """Endpoint to raise our custom exception."""
         raise CustomError()
 
     ext = JSONExceptionHandler(app)
@@ -117,7 +126,8 @@ def test_api_exception_handler(app):
     objects that are raised."""
 
     @app.route('/custom')
-    def testing():
+    def testing():  #pylint: disable=locally-disabled,unused-variable
+        """Endpoint to raise our custom exception."""
         error = ApiError(code='teapot', message='I am a little teapot.')
         raise ApiException(status_code=418, error=error)
 
@@ -188,13 +198,15 @@ def test_api_exception_subclass_variations(app):
     """Subclass ApiException with class attribute descriptors."""
 
     class CustomError(ApiException):
+        """Subclass of ApiException with additional attributes."""
         status_code = 418
         message = "A class attribute exception message."
         code = 'class-attribute'
         info = {'foo': 'bar'}
 
     @app.route('/testing')
-    def testing():
+    def testing():  #pylint: disable=locally-disabled,unused-variable
+        """Endpoint that simply raises our custom exception."""
         raise CustomError()
 
     ext = JSONExceptionHandler(app)
