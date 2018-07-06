@@ -25,7 +25,7 @@ from flask import jsonify, request
 from werkzeug.exceptions import default_exceptions, HTTPException
 
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('apiexceptions')
 
 
 class JSONExceptionHandler(object):
