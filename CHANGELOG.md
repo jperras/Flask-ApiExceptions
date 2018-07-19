@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.1.1](https://github.com/jperras/Flask-ApiExceptions/tree/1.1.1) (2018-07-19)
+
+* Adds .pylintrc configuration file and include it in tox run.
+* Set explicit `apiexceptions` logger name for easier logging configuration.
+* Update README with new feature descriptions.
+
+[Full Changelog](https://github.com/jperras/Flask-ApiExceptions/compare/1.1.0...1.1.1)
+
 ## [1.1.0](https://github.com/jperras/Flask-ApiExceptions/tree/1.1.0) (2018-02-23)
 
 * Allow more streamlined declaration of ApiException subclasses. 
